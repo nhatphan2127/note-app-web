@@ -4,16 +4,29 @@
     min-height: 100vh;
 }
 
-.home-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--navbar-bg);
-    padding: 15px 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px var(--shadow-color);
-    margin-bottom: 30px;
-    border: 1px solid var(--border-color);
+/* New Navbar and Header Styles */
+.navbar {
+    transition: all 0.3s ease;
+    z-index: 1030;
+}
+
+.offcanvas {
+    border: none !important;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.offcanvas-header {
+    padding: 1.5rem;
+}
+
+.offcanvas-body .nav-link {
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.offcanvas-body .nav-link:hover {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary-color) !important;
 }
 
 .search-bar input {
@@ -346,27 +359,6 @@
 
 /* Responsive Overrides */
 @media (max-width: 768px) {
-    .home-header {
-        flex-direction: column;
-        gap: 15px;
-        padding: 15px;
-        align-items: stretch;
-    }
-    
-    .search-bar input {
-        width: 100% !important;
-    }
-
-    .header-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .header-actions button {
-        margin-left: 0;
-    }
-
     .home-main {
         flex-direction: column;
     }
@@ -381,4 +373,45 @@
         width: 95%;
         padding: 16px;
     }
+
+    .notes-container {
+        padding-top: 10px;
+    }
+}
+
+@media (max-width: 991px) {
+    .navbar-brand {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* Floating Action Button (FAB) */
+.fab {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.fab:hover {
+    transform: scale(1.1);
+    background-color: var(--primary-hover);
+    color: white;
+}
+
+.fab:active {
+    transform: scale(0.9);
 }

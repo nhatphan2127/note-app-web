@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Container, Row, Col, Navbar, Nav, Form, Button, InputGroup, Modal, Badge, ListGroup, Image } from 'react-bootstrap';
+import { Container, Row, Col, Navbar, Nav, Form, Button, InputGroup, Modal, Badge, ListGroup, Image, Offcanvas } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faPlus, faTag, faNoteSticky, faList, faTableCells, faFilter, faTimes, faLock, faEye, faEyeSlash, faShareNodes, faUserGear, faWifi, faSignal, faGear, faBell, faCheckDouble, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faPlus, faTag, faNoteSticky, faBars, faList, faTableCells, faFilter, faTimes, faLock, faEye, faEyeSlash, faShareNodes, faUserGear, faWifi, faSignal, faGear, faBell, faCheckDouble, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../AuthContext';
 // import { usePreferences } from '../PreferencesContext';
 import api from '../api';
@@ -38,6 +38,7 @@ const Home: React.FC = () => {
     const [noteToDelete, setNoteToDelete] = useState<number | null>(null);
     const [activeSection, setActiveSection] = useState<'all' | 'shared' | 'labels' | 'preferences' | 'profile'>('all');
     const [pendingAction, setPendingAction] = useState<{ type: 'select' | 'delete' | 'pin', note: Note, event?: React.MouseEvent } | null>(null);
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
     const { isOnline } = useConnectivity();
 
     const fetchLabels = useCallback(async () => {
@@ -404,57 +405,145 @@ const Home: React.FC = () => {
                     Your account is unverified. Please check your email (<strong>{user.email}</strong>) to complete the activation process.
                 </div>
             )}
-            <Navbar expand="lg" className="shadow-sm sticky-top mb-4" style={{ backgroundColor: 'var(--bg-color)' }}>
-                <Container fluid className="px-4">
-                    <Navbar.Brand href="/" className="fw-bold text-primary">NotesApp</Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
+            <Navbar expand="lg" className="shadow-sm sticky-top mb-4 py-2" style={{ backgroundColor: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)' }}>
+                <Container fluid className="px-4 d-flex align-items-center justify-content-between">
+                    <div className="d-flex align-items-center gap-3">
+                        <Button 
+                            variant="light" 
+                            className="d-lg-none border-0 bg-transparent p-0" 
+                            onClick={() => setShowMobileMenu(true)}
+                        >
+                            <FontAwesomeIcon icon={faBars} className="fs-4 text-dark" />
+                        </Button>
+                        <Navbar.Brand href="/" className="fw-bold text-primary fs-3 m-0" style={{ letterSpacing: '-0.5px' }}>
+                            Notes<span className="text-dark">App</span>
+                        </Navbar.Brand>
+                    </div>
 
-                        <Nav className="ms-auto align-items-center">
-                            <Badge bg={isOnline ? 'success' : 'secondary'} className="me-3 px-3 py-2 rounded-pill d-flex align-items-center shadow-sm">
-                                <FontAwesomeIcon icon={isOnline ? faWifi : faSignal} className="me-2" />
-                                {isOnline ? 'Online' : 'Offline'}
-                            </Badge>
-                            <div className="position-relative me-3" style={{ cursor: 'pointer' }} onClick={() => setShowNotifications(!showNotifications)}>
-                                <FontAwesomeIcon icon={faBell} className="text-muted fs-5" />
-                                {notifications.length > 0 && (
-                                    <Badge pill bg="danger" className="position-absolute top-0 start-100 translate-middle" style={{ fontSize: '0.6rem' }}>
-                                        {notifications.length}
-                                    </Badge>
-                                )}
-                            </div>
-                            
-                            <div className="d-flex align-items-center me-3 border-start ps-3" style={{ cursor: 'pointer' }} onClick={() => setActiveSection('profile')}>
-                                {user?.avatar ? (
-                                    <Image 
-                                        src={`http://localhost:8000/storage/${user.avatar}`} 
-                                        roundedCircle 
-                                        width="35" 
-                                        height="35" 
-                                        className="me-2 object-fit-cover shadow-sm border border-2 border-white"
-                                    />
-                                ) : (
-                                    <div className="bg-light rounded-circle d-flex align-items-center justify-content-center me-2 shadow-sm border border-2 border-white" style={{ width: '35px', height: '35px' }}>
-                                        <FontAwesomeIcon icon={faUser} className="text-secondary" />
-                                    </div>
-                                )}
-                                <div className="d-none d-lg-block">
-                                    <div className="lh-1">
-                                        <small className="text-muted" style={{ fontSize: '0.7rem' }}>Welcome back,</small>
-                                        <div className="fw-bold text-dark">{user?.name}</div>
-                                    </div>
+                    <div className="d-flex align-items-center gap-3">
+
+                        <div className="position-relative" style={{ cursor: 'pointer' }} onClick={() => setShowNotifications(!showNotifications)}>
+                            <FontAwesomeIcon icon={faBell} className="text-muted fs-5" />
+                            {notifications.length > 0 && (
+                                <Badge pill bg="danger" className="position-absolute top-0 start-100 translate-middle" style={{ fontSize: '0.6rem', padding: '0.25em 0.5em' }}>
+                                    {notifications.length}
+                                </Badge>
+                            )}
+                        </div>
+
+                        <div className="d-none d-lg-flex align-items-center gap-2 border-start ps-3 ms-2" style={{ cursor: 'pointer' }} onClick={() => setActiveSection('profile')}>
+                            {user?.avatar ? (
+                                <Image 
+                                    src={`http://localhost:8000/storage/${user.avatar}`} 
+                                    roundedCircle 
+                                    width="32" 
+                                    height="32" 
+                                    className="object-fit-cover shadow-sm border border-2 border-white"
+                                />
+                            ) : (
+                                <div className="bg-light rounded-circle d-flex align-items-center justify-content-center shadow-sm border border-2 border-white" style={{ width: '32px', height: '32px' }}>
+                                    <FontAwesomeIcon icon={faUser} className="text-secondary small" />
                                 </div>
-                            </div>
+                            )}
+                            <div className="fw-bold text-dark small">{user?.name}</div>
+                        </div>
 
-                            <Button variant="outline-danger" size="sm" className="rounded-pill px-3 shadow-sm" onClick={logout}>Logout</Button>
-                        </Nav>
-                    </Navbar.Collapse>
+                        <Badge bg={isOnline ? 'success' : 'secondary'} className="d-none d-sm-inline-block px-3 py-2 rounded-pill shadow-sm small">
+                            <FontAwesomeIcon icon={isOnline ? faWifi : faSignal} className="me-1" />
+                            {isOnline ? 'Online' : 'Offline'}
+                        </Badge>
+                    </div>
                 </Container>
             </Navbar>
 
+            {/* Mobile Sidebar (Offcanvas) */}
+            <Offcanvas show={showMobileMenu} onHide={() => setShowMobileMenu(false)} placement="start" style={{ width: '280px' }}>
+                <Offcanvas.Header closeButton className="border-bottom px-4">
+                    <Offcanvas.Title className="fw-bold text-primary">
+                        Notes<span className="text-dark">App</span>
+                    </Offcanvas.Title>
+                </Offcanvas.Header>
+                <Offcanvas.Body className="p-0">
+                    <div className="p-4 border-bottom bg-light">
+                        <div className="d-flex align-items-center gap-3">
+                            {user?.avatar ? (
+                                <Image 
+                                    src={`http://localhost:8000/storage/${user.avatar}`} 
+                                    roundedCircle 
+                                    width="35" 
+                                    height="35" 
+                                    className="object-fit-cover shadow-sm border border-2 border-white"
+                                />
+                            ) : (
+                                <div className="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm border border-2 border-white" style={{ width: '35px', height: '35px' }}>
+                                    <FontAwesomeIcon icon={faUser} className="text-secondary fs-4" />
+                                </div>
+                            )}
+                            <div>
+                                <div className="fw-bold text-dark">{user?.name}</div>
+                                <div className="text-muted small">{user?.email}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <Nav className="flex-column p-3">
+                        <Nav.Link
+                            active={activeSection === 'all'}
+                            className={`rounded-3 mb-2 px-3 py-2 d-flex align-items-center gap-3 ${activeSection === 'all' ? 'bg-primary text-white' : 'text-dark'}`}
+                            onClick={() => { setActiveSection('all'); setShowMobileMenu(false); }}
+                        >
+                            <FontAwesomeIcon icon={faNoteSticky} /> All Notes
+                        </Nav.Link>
+                        <Nav.Link
+                            active={activeSection === 'shared'}
+                            className={`rounded-3 mb-2 px-3 py-2 d-flex align-items-center gap-3 ${activeSection === 'shared' ? 'bg-primary text-white' : 'text-dark'}`}
+                            onClick={() => { setActiveSection('shared'); setShowMobileMenu(false); }}
+                        >
+                            <FontAwesomeIcon icon={faShareNodes} /> Shared with me
+                        </Nav.Link>
+                        <Nav.Link
+                            active={activeSection === 'labels'}
+                            className={`rounded-3 mb-2 px-3 py-2 d-flex align-items-center gap-3 ${activeSection === 'labels' ? 'bg-primary text-white' : 'text-dark'}`}
+                            onClick={() => { setActiveSection('labels'); setShowMobileMenu(false); }}
+                        >
+                            <FontAwesomeIcon icon={faTag} /> Labels
+                        </Nav.Link>
+                        <hr className="my-3 mx-3" />
+                        <Nav.Link
+                            active={activeSection === 'preferences'}
+                            className={`rounded-3 mb-2 px-3 py-2 d-flex align-items-center gap-3 ${activeSection === 'preferences' ? 'bg-primary text-white' : 'text-dark'}`}
+                            onClick={() => { setActiveSection('preferences'); setShowMobileMenu(false); }}
+                        >
+                            <FontAwesomeIcon icon={faGear} /> Settings
+                        </Nav.Link>
+                        <Nav.Link
+                            active={activeSection === 'profile'}
+                            className={`rounded-3 mb-2 px-3 py-2 d-flex align-items-center gap-3 ${activeSection === 'profile' ? 'bg-primary text-white' : 'text-dark'}`}
+                            onClick={() => { setActiveSection('profile'); setShowMobileMenu(false); }}
+                        >
+                            <FontAwesomeIcon icon={faUserGear} /> Profile
+                        </Nav.Link>
+                        <Button 
+                            variant="outline-danger" 
+                            className="mt-4 mx-3 rounded-pill" 
+                            onClick={logout}
+                        >
+                            Logout
+                        </Button>
+                    </Nav>
+                    
+                    <div className="position-absolute bottom-0 w-100 p-4 border-top bg-light">
+                        <div className={`d-flex align-items-center gap-2 ${isOnline ? 'text-success' : 'text-secondary'} small fw-bold`}>
+                            <FontAwesomeIcon icon={isOnline ? faWifi : faSignal} />
+                            {isOnline ? 'System Online' : 'System Offline'}
+                        </div>
+                    </div>
+                </Offcanvas.Body>
+            </Offcanvas>
+
             <Container fluid className="px-4">
                 <Row>
-                    <Col md={4} lg={2} className="mb-4">
+                    <Col lg={2} className="mb-4 d-none d-lg-flex flex-column" style={{ minHeight: 'calc(100vh - 100px)' }}>
                         <div className="d-grid">
                             <Button variant="primary" size="lg" className="shadow-sm py-3 fw-bold d-flex align-items-center justify-content-center gap-2" onClick={handleCreateNote}>
                                 <FontAwesomeIcon icon={faPlus} /> New Note
@@ -502,9 +591,19 @@ const Home: React.FC = () => {
                                 <FontAwesomeIcon icon={faUser} className="me-2" /> Profile Settings
                             </Nav.Link>
                         </Nav>
+
+                        <div className="mt-auto pt-4 border-top">
+                            <Button 
+                                variant="outline-danger" 
+                                className="w-100 rounded-pill d-flex align-items-center justify-content-center gap-2" 
+                                onClick={logout}
+                            >
+                                <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+                            </Button>
+                        </div>
                         
                     </Col >
-                    <Col md={8} lg={10}>
+                    <Col xs={12} lg={10}>
                         {activeSection === 'labels' ? (
                             <div className="p-3 rounded shadow-sm" style={{ backgroundColor: 'var(--card-bg)', marginBottom: '1.4em' }}>
                                 <LabelsPage
@@ -847,6 +946,15 @@ const Home: React.FC = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            {/* Floating Action Button for Mobile */}
+            <button 
+                className="fab d-lg-none" 
+                onClick={handleCreateNote}
+                title="New Note"
+            >
+                <FontAwesomeIcon icon={faPlus} />
+            </button>
 
         </div>
     );
