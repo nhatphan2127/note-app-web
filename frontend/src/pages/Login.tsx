@@ -49,7 +49,7 @@ const Login: React.FC = () => {
                                         type="email" 
                                         placeholder="Email" 
                                         className="py-2"
-                                        value={email} 
+                                        value={email || ""} 
                                         onChange={(e) => setEmail(e.target.value)} 
                                         required 
                                     />
@@ -64,7 +64,7 @@ const Login: React.FC = () => {
                                         type="password" 
                                         placeholder="Enter your password" 
                                         className="py-2"
-                                        value={password} 
+                                        value={password || ""} 
                                         onChange={(e) => setPassword(e.target.value)} 
                                         required 
                                     />

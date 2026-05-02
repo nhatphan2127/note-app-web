@@ -434,7 +434,7 @@ const Home: React.FC = () => {
                         <div className="d-none d-lg-flex align-items-center gap-2 border-start ps-3 ms-2" style={{ cursor: 'pointer' }} onClick={() => setActiveSection('profile')}>
                             {user?.avatar ? (
                                 <Image 
-                                    src={`http://localhost:8000/storage/${user.avatar}`} 
+                                    src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/storage/${user.avatar}`} 
                                     roundedCircle 
                                     width="32" 
                                     height="32" 
@@ -468,7 +468,7 @@ const Home: React.FC = () => {
                         <div className="d-flex align-items-center gap-3">
                             {user?.avatar ? (
                                 <Image 
-                                    src={`http://localhost:8000/storage/${user.avatar}`} 
+                                    src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/storage/${user.avatar}`} 
                                     roundedCircle 
                                     width="35" 
                                     height="35" 
@@ -493,6 +493,8 @@ const Home: React.FC = () => {
                             onClick={() => { setActiveSection('all'); setShowMobileMenu(false); }}
                         >
                             <FontAwesomeIcon icon={faNoteSticky} /> All Notes
+
+                            
                         </Nav.Link>
                         <Nav.Link
                             active={activeSection === 'shared'}
@@ -543,65 +545,66 @@ const Home: React.FC = () => {
 
             <Container fluid className="px-4">
                 <Row>
-                    <Col lg={2} className="mb-4 d-none d-lg-flex flex-column" style={{ minHeight: 'calc(100vh - 100px)' }}>
-                        <div className="d-grid">
-                            <Button variant="primary" size="lg" className="shadow-sm py-3 fw-bold d-flex align-items-center justify-content-center gap-2" onClick={handleCreateNote}>
-                                <FontAwesomeIcon icon={faPlus} /> New Note
-                            </Button>
-                        </div>
-                        <Nav className="flex-column mt-4">
-                            <Nav.Link
-                                href="#"
-                                active={activeSection === 'all' && selectedLabelIds.length === 0}
-                                className={`rounded mb-1 ${activeSection === 'all' && selectedLabelIds.length === 0 ? 'bg-primary text-white' : 'text-main'}`}
-                                onClick={() => { setActiveSection('all'); setSelectedLabelIds([]); }}
-                            >
-                                <FontAwesomeIcon icon={faNoteSticky} className="me-2" /> All Notes
-                            </Nav.Link>
-                            <Nav.Link
-                                href="#"
-                                active={activeSection === 'shared'}
-                                className={`rounded mb-1 ${activeSection === 'shared' ? 'bg-primary text-white' : 'text-main'}`}
-                                onClick={() => { setActiveSection('shared'); setSelectedLabelIds([]); }}
-                            >
-                                <FontAwesomeIcon icon={faShareNodes} className="me-2" /> Shared with me
-                            </Nav.Link>
-                            <Nav.Link
-                                href="#"
-                                active={activeSection === 'labels'}
-                                className={`rounded mb-1 mt-1 ${activeSection === 'labels' ? 'bg-primary text-white' : 'text-main'}`}
-                                onClick={() => setActiveSection('labels')}
-                            >
-                                <FontAwesomeIcon icon={faTag} className="me-2" /> Label Management
-                            </Nav.Link>
-                            <Nav.Link
-                                href="#"
-                                active={activeSection === 'preferences'}
-                                className={`rounded mb-1 ${activeSection === 'preferences' ? 'bg-primary text-white' : 'text-main'}`}
-                                onClick={() => { setActiveSection('preferences'); }}
-                            >
-                                <FontAwesomeIcon icon={faGear} className="me-2" /> User Preferences
-                            </Nav.Link>
-                            <Nav.Link
-                                href="#"
-                                active={activeSection === 'profile'}
-                                className={`rounded mb-1 ${activeSection === 'profile' ? 'bg-primary text-white' : 'text-main'}`}
-                                onClick={() => { setActiveSection('profile'); }}
-                            >
-                                <FontAwesomeIcon icon={faUser} className="me-2" /> Profile Settings
-                            </Nav.Link>
-                        </Nav>
+                    <Col lg={2} className="d-none d-lg-block">
+                        <div className="sticky-top d-flex flex-column " style={{ top: '80px', height: 'calc(100vh - 80px)', paddingBottom: '1rem', zIndex: 1020 }}>
+                            <div className="d-grid">
+                                <Button variant="primary" size="lg" className="shadow-sm py-3 fw-bold d-flex align-items-center justify-content-center gap-2" onClick={handleCreateNote}>
+                                    <FontAwesomeIcon icon={faPlus} /> New Note
+                                </Button>
+                            </div>
+                            <Nav className="flex-column mt-4">
+                                <Nav.Link
+                                    href="#"
+                                    active={activeSection === 'all' && selectedLabelIds.length === 0}
+                                    className={`rounded mb-1 ${activeSection === 'all' && selectedLabelIds.length === 0 ? 'bg-primary text-white' : 'text-main'}`}
+                                    onClick={() => { setActiveSection('all'); setSelectedLabelIds([]); }}
+                                >
+                                    <FontAwesomeIcon icon={faNoteSticky} className="me-2" /> All Notes
+                                </Nav.Link>
+                                <Nav.Link
+                                    href="#"
+                                    active={activeSection === 'shared'}
+                                    className={`rounded mb-1 ${activeSection === 'shared' ? 'bg-primary text-white' : 'text-main'}`}
+                                    onClick={() => { setActiveSection('shared'); setSelectedLabelIds([]); }}
+                                >
+                                    <FontAwesomeIcon icon={faShareNodes} className="me-2" /> Shared with me
+                                </Nav.Link>
+                                <Nav.Link
+                                    href="#"
+                                    active={activeSection === 'labels'}
+                                    className={`rounded mb-1 mt-1 ${activeSection === 'labels' ? 'bg-primary text-white' : 'text-main'}`}
+                                    onClick={() => setActiveSection('labels')}
+                                >
+                                    <FontAwesomeIcon icon={faTag} className="me-2" /> Label Management
+                                </Nav.Link>
+                                <Nav.Link
+                                    href="#"
+                                    active={activeSection === 'preferences'}
+                                    className={`rounded mb-1 ${activeSection === 'preferences' ? 'bg-primary text-white' : 'text-main'}`}
+                                    onClick={() => { setActiveSection('preferences'); }}
+                                >
+                                    <FontAwesomeIcon icon={faGear} className="me-2" /> User Preferences
+                                </Nav.Link>
+                                <Nav.Link
+                                    href="#"
+                                    active={activeSection === 'profile'}
+                                    className={`rounded mb-1 ${activeSection === 'profile' ? 'bg-primary text-white' : 'text-main'}`}
+                                    onClick={() => { setActiveSection('profile'); }}
+                                >
+                                    <FontAwesomeIcon icon={faUser} className="me-2" /> Profile Settings
+                                </Nav.Link>
+                            </Nav>
 
-                        <div className="mt-auto pt-4 border-top">
-                            <Button 
-                                variant="outline-danger" 
-                                className="w-100 rounded-pill d-flex align-items-center justify-content-center gap-2" 
-                                onClick={logout}
-                            >
-                                <FontAwesomeIcon icon={faSignOutAlt} /> Logout
-                            </Button>
+                            <div className="mt-auto pt-4 border-top">
+                                <Button 
+                                    variant="outline-danger" 
+                                    className="w-100 rounded-pill d-flex align-items-center justify-content-center gap-2" 
+                                    onClick={logout}
+                                >
+                                    <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+                                </Button>
+                            </div>
                         </div>
-                        
                     </Col >
                     <Col xs={12} lg={10}>
                         {activeSection === 'labels' ? (
@@ -676,7 +679,7 @@ const Home: React.FC = () => {
                                                 placeholder="Search notes..."
                                                 className="border-0 ps-3"
                                                 aria-label="Search"
-                                                value={search}
+                                                value={search || ""}
                                                 onChange={(e) => setSearch(e.target.value)}
                                                 style={{
                                                     backgroundColor: 'var(--bg-color)',
@@ -819,7 +822,7 @@ const Home: React.FC = () => {
                                     <Form.Control
                                         type={showVerifyPasswordInput ? "text" : "password"}
                                         placeholder="Password"
-                                        value={verifyPassword}
+                                        value={verifyPassword || ""}
                                         onChange={(e) => setVerifyPassword(e.target.value)}
                                         autoFocus
                                         className="border-0 py-2 ps-3"
@@ -867,7 +870,7 @@ const Home: React.FC = () => {
                                 <Form.Control
                                     type="password"
                                     placeholder="Enter login password"
-                                    value={accountPassword}
+                                    value={accountPassword || ""}
                                     onChange={(e) => setAccountPassword(e.target.value)}
                                     className="bg-light border-0 py-2"
                                 />
@@ -878,7 +881,7 @@ const Home: React.FC = () => {
                                 <Form.Control
                                     type="password"
                                     placeholder="Min 4 characters"
-                                    value={newNotePassword}
+                                    value={newNotePassword || ""}
                                     onChange={(e) => setNewNotePassword(e.target.value)}
                                     className="bg-light border-0 py-2"
                                 />
@@ -888,7 +891,7 @@ const Home: React.FC = () => {
                                 <Form.Control
                                     type="password"
                                     placeholder="Repeat new password"
-                                    value={newNotePasswordConfirm}
+                                    value={newNotePasswordConfirm || ""}
                                     onChange={(e) => setNewNotePasswordConfirm(e.target.value)}
                                     className="bg-light border-0 py-2"
                                 />

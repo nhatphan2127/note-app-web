@@ -117,7 +117,7 @@ const ForgotPassword: React.FC = () => {
                                         <Form.Control 
                                             type="email" 
                                             placeholder="Enter email" 
-                                            value={email} 
+                                            value={email || ""} 
                                             onChange={(e) => setEmail(e.target.value)} 
                                             required 
                                         />
@@ -138,7 +138,7 @@ const ForgotPassword: React.FC = () => {
                                         <Form.Control 
                                             type="text" 
                                             placeholder="Enter OTP" 
-                                            value={otp} 
+                                            value={otp || ""} 
                                             onChange={(e) => setOtp(e.target.value)} 
                                             required 
                                         />
@@ -159,7 +159,7 @@ const ForgotPassword: React.FC = () => {
                                         <Form.Control 
                                             type="password" 
                                             placeholder="New Password" 
-                                            value={password} 
+                                            value={password || ""} 
                                             onChange={(e) => setPassword(e.target.value)} 
                                             required 
                                             minLength={8}
@@ -170,7 +170,7 @@ const ForgotPassword: React.FC = () => {
                                         <Form.Control 
                                             type="password" 
                                             placeholder="Confirm New Password" 
-                                            value={passwordConfirmation} 
+                                            value={passwordConfirmation || ""} 
                                             onChange={(e) => setPasswordConfirmation(e.target.value)} 
                                             required 
                                         />

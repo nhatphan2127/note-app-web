@@ -92,7 +92,7 @@ const ResetPassword: React.FC = () => {
                                                 <Form.Control 
                                                     type="password" 
                                                     placeholder="Enter new password" 
-                                                    value={password} 
+                                                    value={password || ""} 
                                                     onChange={(e) => setPassword(e.target.value)} 
                                                     required 
                                                     minLength={8}
@@ -103,7 +103,7 @@ const ResetPassword: React.FC = () => {
                                                 <Form.Control 
                                                     type="password" 
                                                     placeholder="Confirm new password" 
-                                                    value={passwordConfirmation} 
+                                                    value={passwordConfirmation || ""} 
                                                     onChange={(e) => setPasswordConfirmation(e.target.value)} 
                                                     required 
                                                 />

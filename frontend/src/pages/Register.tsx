@@ -63,7 +63,7 @@ const Register: React.FC = () => {
                                     <Form.Control 
                                         type="text" 
                                         placeholder="Enter name" 
-                                        value={name} 
+                                        value={name || ""} 
                                         onChange={(e) => setName(e.target.value)} 
                                         required 
                                     />
@@ -73,7 +73,7 @@ const Register: React.FC = () => {
                                     <Form.Label>Email address</Form.Label>
                                     <Form.Control 
                                         placeholder="Enter email" 
-                                        value={email} 
+                                        value={email || ""} 
                                         onChange={(e) => setEmail(e.target.value)} 
                                         required 
                                     />
@@ -84,7 +84,7 @@ const Register: React.FC = () => {
                                     <Form.Control 
                                         type="password" 
                                         placeholder="Password" 
-                                        value={password} 
+                                        value={password || ""} 
                                         onChange={(e) => setPassword(e.target.value)} 
                                     />
                                 </Form.Group>
@@ -94,7 +94,7 @@ const Register: React.FC = () => {
                                     <Form.Control 
                                         type="password" 
                                         placeholder="Confirm password" 
-                                        value={passwordConfirmation} 
+                                        value={passwordConfirmation || ""} 
                                         onChange={(e) => setPasswordConfirmation(e.target.value)} 
                                     />
                                 </Form.Group>

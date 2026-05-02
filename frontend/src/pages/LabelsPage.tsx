@@ -55,7 +55,7 @@ const LabelsPage: React.FC<LabelsPageProps> = ({
                                 <InputGroup size="lg">
                                     <Form.Control
                                         placeholder="Enter label name..."
-                                        value={newLabelName}
+                                        value={newLabelName || ""}
                                         onChange={(e) => setNewLabelName(e.target.value)}
                                         onKeyPress={(e) => e.key === 'Enter' && handleAddLabel()}
                                         className="fs-6 shadow-none"
@@ -97,7 +97,7 @@ const LabelsPage: React.FC<LabelsPageProps> = ({
                                                 {editingLabelId === label.id ? (
                                                     <InputGroup size="sm">
                                                         <Form.Control
-                                                            value={editingLabelName}
+                                                            value={editingLabelName || ""}
                                                             onChange={(e) => setEditingLabelName(e.target.value)}
                                                             className="shadow-none"
                                                             autoFocus

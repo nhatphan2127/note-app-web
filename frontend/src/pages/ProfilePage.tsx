@@ -47,7 +47,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
 
     function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
         const { width, height } = e.currentTarget;
-        const crop = centerCrop(
+        const newCrop = centerCrop(
             makeAspectCrop(
                 {
                     unit: '%',
@@ -61,7 +61,16 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
             height
         );
 
-        setCrop(crop);
+        setCrop(newCrop);
+        
+        // Also set completedCrop so the button is enabled immediately
+        setCompletedCrop({
+            unit: 'px',
+            x: (newCrop.x * width) / 100,
+            y: (newCrop.y * height) / 100,
+            width: (newCrop.width * width) / 100,
+            height: (newCrop.height * height) / 100,
+        });
     }
 
     const getCroppedImg = async (image: HTMLImageElement, crop: PixelCrop): Promise<Blob> => {
@@ -177,7 +186,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
     };
 
     const avatarUrl = user?.avatar 
-        ? `http://localhost:8000/storage/${user.avatar}` 
+        ? `${import.meta.env.VITE_API_BASE_URL}/storage/${user.avatar}` 
         : null;
 
     return (
@@ -236,7 +245,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                             <Form.Label>Full Name</Form.Label>
                             <Form.Control 
                                 type="text" 
-                                value={name} 
+                                value={name || ""} 
                                 onChange={(e) => setName(e.target.value)} 
                                 required 
                                 maxLength={255}
@@ -248,7 +257,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                             <Form.Control 
                                 as="textarea" 
                                 rows={3} 
-                                value={bio} 
+                                value={bio || ""} 
                                 onChange={(e) => setBio(e.target.value)} 
                                 maxLength={1000}
                                 placeholder="Tell us about yourself..."
@@ -293,7 +302,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                             <Form.Control
                                 type={showPasswords ? "text" : "password"}
                                 placeholder="Enter current password"
-                                value={currentPassword}
+                                value={currentPassword || ""}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                                 required
                                 disabled={passwordSubmitting}
@@ -305,7 +314,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                             <Form.Control
                                 type={showPasswords ? "text" : "password"}
                                 placeholder="Min 8 characters"
-                                value={newPassword}
+                                value={newPassword || ""}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 required
                                 disabled={passwordSubmitting}
@@ -317,7 +326,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                             <Form.Control
                                 type={showPasswords ? "text" : "password"}
                                 placeholder="Repeat new password"
-                                value={confirmPassword}
+                                value={confirmPassword || ""}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required
                                 disabled={passwordSubmitting}
@@ -346,38 +355,53 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                 </Modal.Body>
             </Modal>
 
-            {previewUrl && (
-                <div className="mt-5 border-top pt-4">
-                    <h4>Crop New Avatar</h4>
-                    <div className="d-flex flex-column align-items-center bg-light p-3 rounded">
-                        <ReactCrop
-                            crop={crop}
-                            onChange={(c) => setCrop(c)}
-                            onComplete={(c) => setCompletedCrop(c)}
-                            aspect={1}
-                            circularCrop
-                        >
-                            <img 
-                                ref={imgRef}
-                                alt="Crop me" 
-                                src={previewUrl} 
-                                style={{ maxWidth: '100%', maxHeight: '400px' }}
-                                onLoad={onImageLoad}
-                            />
-                        </ReactCrop>
-                        
-                        <div className="mt-3 d-flex gap-2">
-                            <Button variant="secondary" onClick={() => { setPreviewUrl(null); setSelectedFile(null); }}>
-                                Cancel
-                            </Button>
-                            <Button variant="success" onClick={handleUpdateAvatar} disabled={loading || !completedCrop}>
-                                <FontAwesomeIcon icon={faCheck} className="me-2" />
-                                Apply & Save Avatar
-                            </Button>
+            {/* Avatar Crop Modal */}
+            <Modal 
+                show={!!previewUrl} 
+                onHide={() => { setPreviewUrl(null); setSelectedFile(null); }}
+                centered
+                size="lg"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Crop New Avatar</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="d-flex flex-column align-items-center">
+                        <div style={{ maxWidth: '100%', overflow: 'auto' }}>
+                            <ReactCrop
+                                crop={crop}
+                                onChange={(c) => setCrop(c)}
+                                onComplete={(c) => setCompletedCrop(c)}
+                                aspect={1}
+                                circularCrop
+                            >
+                                <img 
+                                    ref={imgRef}
+                                    alt="Crop me" 
+                                    src={previewUrl || ''} 
+                                    style={{ maxWidth: '100%', maxHeight: '60vh' }}
+                                    onLoad={onImageLoad}
+                                />
+                            </ReactCrop>
                         </div>
                     </div>
-                </div>
-            )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => { setPreviewUrl(null); setSelectedFile(null); }}>
+                        Cancel
+                    </Button>
+                    <Button variant="success" onClick={handleUpdateAvatar} disabled={loading || !completedCrop}>
+                        {loading ? (
+                            <>Updating...</>
+                        ) : (
+                            <>
+                                <FontAwesomeIcon icon={faCheck} className="me-2" />
+                                Apply & Save Avatar
+                            </>
+                        )}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
