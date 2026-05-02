@@ -1,0 +1,45 @@
+/* Preferences.css */
+.preferences-container {
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+/* Tối ưu cho Mobile (iPhone) */
+@media (max-width: 576px) {
+    .preferences-container {
+        padding: 15px !important;
+        border-radius: 0 !important; /* Full màn hình trên mobile */
+    }
+
+    .font-size-group {
+        display: flex;
+        flex-direction: column; /* Chồng hàng dọc trên iPhone */
+        width: 100%;
+    }
+
+    .font-size-group .btn {
+        margin-bottom: 5px;
+        border-radius: 8px !important; /* Bo góc riêng cho từng nút */
+    }
+
+    .color-grid {
+        justify-content: center; /* Căn giữa bảng màu trên mobile */
+        gap: 10px !important;
+    }
+
+    .color-option {
+        width: 35px !important;
+        height: 35px !important;
+    }
+    
+    h2 { font-size: 1.5rem; }
+    h4 { font-size: 1.1rem; }
+}
+
+/* Tối ưu cho Tablet */
+@media (min-width: 577px) and (max-width: 992px) {
+    .font-size-group {
+        display: inline-flex;
+        width: auto;
+    }
+}
