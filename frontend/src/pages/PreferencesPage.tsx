@@ -52,7 +52,7 @@ const PreferencesPage: React.FC<PreferencesPageProps> = ({ onBack }) => {
     ];
 
     return (
-        <div className="preferences-container p-3 p-md-4 rounded shadow-sm" style={{ backgroundColor: 'var(--card-bg)', color: 'var(--text-main)' }}>
+        <div className="preferences-container p-3 p-md-4 rounded shadow-sm" style={{ backgroundColor: 'var(--card-bg)', color: 'var(--text-main)', marginBottom: '1.4em' }}>
             {/* Header: Responsive cho mobile */}
             <div className="d-flex align-items-center mb-3 mb-md-4">
                 <Button variant="link" className="text-main p-0 me-2" onClick={onBack}>

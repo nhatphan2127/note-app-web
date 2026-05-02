@@ -9,6 +9,8 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import VerifyEmail from './pages/VerifyEmail';
+import VerifySuccess from './pages/VerifySuccess';
+import VerifyError from './pages/VerifyError';
 import '../public/css/App.css';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -32,6 +34,8 @@ function App() {
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/email/verify/:id/:hash" element={<VerifyEmail />} />
+                    <Route path="/email/verify-success" element={<VerifySuccess />} />
+                    <Route path="/email/verify-error" element={<VerifyError />} />
                     <Route path="/" element={
                         <ProtectedRoute>
                             <Home />

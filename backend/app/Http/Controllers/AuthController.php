@@ -85,8 +85,10 @@ class AuthController extends Controller
     {
         $user = User::findOrFail($id);
 
+        $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+
         if (!hash_equals((string) $hash, sha1($user->email))) {
-            return response()->json(['message' => 'Invalid verification link'], 403);
+            return redirect()->away($frontendUrl . '/email/verify-error');
         }
 
         if (!$user->hasVerifiedEmail()) {
@@ -95,7 +97,6 @@ class AuthController extends Controller
             }
         }
 
-        $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
         return redirect()->away($frontendUrl . '/email/verify-success');
     }
 

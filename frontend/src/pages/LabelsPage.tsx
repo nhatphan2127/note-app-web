@@ -34,14 +34,15 @@ const LabelsPage: React.FC<LabelsPageProps> = ({
     };
 
     return (
-        <Container fluid className="p-0" style={{ backgroundColor: 'var(--modal-bg)' }}> {/* Thay px-4 thành px-0 hoặc px-2 */}
+        <Container 
+            fluid className="p-0" style={{ backgroundColor: 'var(--modal-bg)' }}> {/* Thay px-4 thành px-0 hoặc px-2 */}
             <Row className="m-0"> {/* Sử dụng m-0 để không bị lề âm */}
                 <Col xs={12} className="m-0"> {/* Thay đổi từ lg={10} xl={8} thành xs={12} để chiếm trọn không gian */}
                     <Card className="bg-dark text-white border-0 " style={{ backgroundColor: 'var(--modal-bg)' }}>
                         <Card.Body className="p-3 p-md-4" style={{ backgroundColor: 'var(--modal-bg)' }}>
                             <h3 className="mb-4 d-flex align-items-center gap-2 fs-4 fs-md-2 text-primary">
                                 <FontAwesomeIcon icon={faTag} />
-                                <span>Manage Labels</span>
+                                <span>Label Management</span>
                             </h3>
 
                             <div className="mb-4">

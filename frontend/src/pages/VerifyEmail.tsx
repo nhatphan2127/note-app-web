@@ -12,14 +12,10 @@ const VerifyEmail: React.FC = () => {
     useEffect(() => {
         const verify = async () => {
             try {
-                const response = await api.get(`/email/verify/${id}/${hash}`);
-                setStatus('success');
-                setMessage(response.data.message);
-                // Redirect to home after 3 seconds
-                setTimeout(() => navigate('/'), 3000);
+                await api.get(`/email/verify/${id}/${hash}`);
+                navigate('/email/verify-success');
             } catch (err: any) {
-                setStatus('error');
-                setMessage(err.response?.data?.message || 'Verification failed');
+                navigate('/email/verify-error');
             }
         };
 

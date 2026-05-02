@@ -483,7 +483,7 @@ const Home: React.FC = () => {
                                 className={`rounded mb-1 mt-1 ${activeSection === 'labels' ? 'bg-primary text-white' : 'text-main'}`}
                                 onClick={() => setActiveSection('labels')}
                             >
-                                <FontAwesomeIcon icon={faTag} className="me-2" /> Manage Labels
+                                <FontAwesomeIcon icon={faTag} className="me-2" /> Label Management
                             </Nav.Link>
                             <Nav.Link
                                 href="#"
@@ -506,7 +506,7 @@ const Home: React.FC = () => {
                     </Col >
                     <Col md={8} lg={10}>
                         {activeSection === 'labels' ? (
-                            <div className="p-3 rounded shadow-sm" style={{ backgroundColor: 'var(--card-bg)' }}>
+                            <div className="p-3 rounded shadow-sm" style={{ backgroundColor: 'var(--card-bg)', marginBottom: '1.4em' }}>
                                 <LabelsPage
                                     labels={labels}
                                     onAddLabel={handleAddLabel}
