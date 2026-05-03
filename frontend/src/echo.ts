@@ -3,7 +3,7 @@ import Pusher from 'pusher-js';
 
 (window as any).Pusher = Pusher;
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 const host = apiBaseUrl.replace(/^https?:\/\//, '');
 
 const echo = new Echo({
@@ -45,3 +45,4 @@ const echo = new Echo({
 (window as any).Echo = echo;
 
 export default echo;
+

@@ -172,7 +172,7 @@ const Home: React.FC = () => {
 
         notes.forEach(note => {
             const channelName = `note.${note.id}`;
-            const channel = echo.private(channelName)
+            const channel = echo.join(channelName)
                 .listen('NoteUpdated', (e: any) => {
                     console.log("Đã nhận dữ liệu socket:", e)
                     if (e.user_id !== user?.id) {
