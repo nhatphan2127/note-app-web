@@ -8,6 +8,14 @@ services:
     volumes:
       - ./backend:/var/www
       - /var/www/vendor # Giữ lại vendor trong container
+    environment:
+      - REVERB_HOST=reverb
+      - REVERB_PORT=8080
+      - REVERB_SCHEME=http
+      - REVERB_APP_ID=123456
+      - REVERB_APP_KEY=6wioz8fx9aiiukh9ycj7
+      - REVERB_APP_SECRET=somethingsecret
+    
     networks:
       - app-network
 
