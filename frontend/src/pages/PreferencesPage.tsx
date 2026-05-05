@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Form, Modal} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFont, faSun, faMoon, faPalette, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import '../../public/css/PreferencePage.css'; // Import file CSS trên
+import '/src/assets/css/PreferencePage.css'; // Import file CSS trên
 import { usePreferences } from '../PreferencesContext';
 import { useConnectivity } from '../ConnectivityContext';
 import OfflineModal from '../components/OfflineModal';

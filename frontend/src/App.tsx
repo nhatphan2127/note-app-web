@@ -11,7 +11,7 @@ import ResetPassword from './pages/ResetPassword';
 import VerifyEmail from './pages/VerifyEmail';
 import VerifySuccess from './pages/VerifySuccess';
 import VerifyError from './pages/VerifyError';
-import '../public/css/App.css';
+import '/src/assets/css/App.css';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { token, loading } = useAuth();
