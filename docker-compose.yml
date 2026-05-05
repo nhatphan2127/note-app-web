@@ -193,7 +193,9 @@ services:
         condition: service_healthy
     # CHỖ BẠN CẦN ĐÂY: Chạy migrate -> seed -> rồi mới bật php-fpm
     command: >
-      sh -c "php artisan migrate --force && 
+      sh -c "echo 'Waiting for MySQL...' && 
+             sleep 10 && 
+             php artisan migrate --force && 
              php artisan db:seed --force && 
              php-fpm"
     networks:
@@ -203,6 +205,15 @@ services:
   queue:
     build: ./backend
     container_name: laravel_worker
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=noteapp
+      - DB_USERNAME=root
+      - DB_PASSWORD=11111111
+      - CACHE_STORE=database # Hoặc redis nếu bạn muốn dùng redis cho cache
+      - QUEUE_CONNECTION=database # Hoặc redis
     volumes:
       - ./backend:/var/www
     depends_on:
@@ -210,7 +221,10 @@ services:
         condition: service_healthy
       backend:
         condition: service_started # Đợi backend chạy xong migrate/seed
-    command: php artisan queue:work
+    command: >
+      sh -c "echo 'Waiting for MySQL...' && 
+             sleep 10 && 
+             php artisan queue:work --sleep=3 --tries=3"
     networks:
       - app-network
 
@@ -262,10 +276,12 @@ services:
     ports:
       - "5173:5173"
     environment:
+      - VITE_API_BASE_URL=http://localhost:8000
       - VITE_REVERB_APP_KEY=6wioz8fx9aiiukh9ycj7
-      - VITE_REVERB_HOST=localhost # Browser của bạn kết nối tới localhost
+      - VITE_REVERB_HOST=localhost
       - VITE_REVERB_PORT=8080
       - VITE_REVERB_SCHEME=http
+
     volumes:
       - ./frontend:/app
       - /app/node_modules
