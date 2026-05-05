@@ -45,6 +45,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
     const isDark = preferences.theme === 'dark';
     const fileInputRef = useRef<HTMLInputElement>(null);
     const timeoutRef = useRef<any>(null);
+    const typingTimeoutRef = useRef<any>(null);
     
     const [collaborators, setCollaborators] = useState<any[]>([]);
     const [isTyping, setIsTyping] = useState<Record<number, boolean>>({});
@@ -60,8 +61,11 @@ const NoteModal: React.FC<NoteModalProps> = ({
     }, [onUpdate]);
 
     useEffect(() => {
-        setTitle(note.title);
-        setContent(note.content);
+        // Only sync from props if not locally changing to avoid overwriting user input
+        if (!isLocallyChanging.current) {
+            setTitle(note.title);
+            setContent(note.content);
+        }
         setSelectedLabels(note.labels?.map(l => l.id) || []);
     }, [note.id, note.title, note.content, note.labels]);
 
@@ -71,8 +75,9 @@ const NoteModal: React.FC<NoteModalProps> = ({
         const echo = (window as any).Echo;
         
         if (echo) {
-            echo.join(channelName)
-                .here((users: any[]) => {
+            const channel = echo.join(channelName);
+            
+            channel.here((users: any[]) => {
                     setCollaborators(users.filter(u => u.id !== currentUser?.id));
                 })
                 .joining((user: any) => {
@@ -163,9 +168,19 @@ const NoteModal: React.FC<NoteModalProps> = ({
         }
     };
 
+    const markLocalChange = () => {
+        isLocallyChanging.current = true;
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+        typingTimeoutRef.current = setTimeout(() => {
+            isLocallyChanging.current = false;
+        }, 2000); // 2 seconds of inactivity to consider local change finished
+    };
+
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newTitle = e.target.value;
-        isLocallyChanging.current = true;
+        markLocalChange();
         setTitle(newTitle);
         
         const echo = (window as any).Echo;
@@ -174,12 +189,11 @@ const NoteModal: React.FC<NoteModalProps> = ({
         }
 
         debouncedUpdate(note.id, { title: newTitle });
-        setTimeout(() => { isLocallyChanging.current = false; }, 1000);
     };
 
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newContent = e.target.value;
-        isLocallyChanging.current = true;
+        markLocalChange();
         setContent(newContent);
 
         const echo = (window as any).Echo;
@@ -188,7 +202,6 @@ const NoteModal: React.FC<NoteModalProps> = ({
         }
 
         debouncedUpdate(note.id, { content: newContent });
-        setTimeout(() => { isLocallyChanging.current = false; }, 1000);
     };
 
     const handleToggleLabel = (labelId: number) => {
@@ -264,6 +277,9 @@ const NoteModal: React.FC<NoteModalProps> = ({
         return () => {
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
+            }
+            if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
             }
         };
     }, []);

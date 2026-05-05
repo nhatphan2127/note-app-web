@@ -159,38 +159,50 @@ const Home: React.FC = () => {
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
             fetchNotes();
-        }, 300);
+            console.log('Fetching notes with search:', search, 'and labels:', selectedLabelIds);
+        }, 1000);
 
         return () => clearTimeout(delayDebounceFn);
     }, [search, selectedLabelIds, activeSection, fetchNotes]);
 
     useEffect(() => {
-        const echo = (window as any).Echo;
-        if (!echo || notes.length === 0) return;
+    const echo = (window as any).Echo;
+    // Thêm check user?.id để đảm bảo có ID so sánh
+    if (!echo || !user?.id || notes.length === 0) return;
 
-        const channels: any[] = [];
+    const channels: string[] = [];
 
-        notes.forEach(note => {
-            const channelName = `note.${note.id}`;
-            const channel = echo.join(channelName)
-                .listen('NoteUpdated', (e: any) => {
-                    console.log("Đã nhận dữ liệu socket:", e)
-                    if (e.user_id !== user?.id) {
-                        handleUpdateNote(e.id, {
-                            title: e.title,
-                            content: e.content
-                        }, true);
-                    }
-                });
-            channels.push({ name: channelName, channel });
-        });
+    notes.forEach(note => {
+        const channelName = `note.${note.id}`;
+        echo.join(channelName)
+            .listen('NoteUpdated', (e: any) => {
+                // Kiểm tra nghiêm ngặt ID người gửi
+                // Dùng String() để tránh lỗi so sánh khác kiểu dữ liệu
+                const isMine = String(e.user_id) === String(user.id);
+                
+                // Nếu là của mình gửi hoặc đang mở modal note đó thì KHÔNG cập nhật
+                if (isMine || selectedNote?.id === e.id) {
+                    console.log("Bỏ qua cập nhật (tự gửi hoặc đang edit)");
+                    return;
+                }
 
-        return () => {
-            channels.forEach(c => {
-                echo.leave(c.name);
+                console.log("Đã nhận dữ liệu từ người khác:", e);
+                handleUpdateNote(e.id, {
+                    title: e.title,
+                    content: e.content
+                }, true);
             });
-        };
-    }, [notes.length, user?.id]); // Listen when notes list changes
+        
+        channels.push(channelName);
+    });
+
+    return () => {
+        channels.forEach(name => {
+            echo.leave(name);
+        });
+    };
+    // Thay đổi dependency: Dùng chuỗi ID để tránh chạy lại effect vô ích
+}, [notes.map(n => n.id).join(','), user?.id, selectedNote?.id]); // Listen when notes list or selected note changes
 
     const sortNotes = (notesList: Note[]) => {
         return [...notesList].sort((a, b) => {
