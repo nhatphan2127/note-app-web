@@ -458,7 +458,9 @@ const Home: React.FC = () => {
                                     <FontAwesomeIcon icon={faUser} className="text-secondary small" />
                                 </div>
                             )}
-                            <div className="fw-bold text-dark small">{user?.name}</div>
+                            <div className="fw-bold small"
+                                style={{color: 'var(--text-main)'}}
+                            >{user?.name}</div>
                         </div>
 
                         <Badge bg={isOnline ? 'success' : 'secondary'} className="d-none d-sm-inline-block px-3 py-2 rounded-pill shadow-sm small">

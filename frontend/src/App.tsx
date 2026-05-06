@@ -22,6 +22,15 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     return <>{children}</>;
 };
 
+const GuestRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { token, loading } = useAuth();
+
+    if (loading) return <div>Loading...</div>;
+    if (token) return <Navigate to="/" />;
+
+    return <>{children}</>;
+};
+
 function App() {
     return (
         <AuthProvider>
@@ -29,10 +38,26 @@ function App() {
                 <PreferencesProvider>
                     <Router>
                 <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/login" element={
+                        <GuestRoute>
+                            <Login />
+                        </GuestRoute>
+                    } />
+                    <Route path="/register" element={
+                        <GuestRoute>
+                            <Register />
+                        </GuestRoute>
+                    } />
+                    <Route path="/forgot-password" element={
+                        <GuestRoute>
+                            <ForgotPassword />
+                        </GuestRoute>
+                    } />
+                    <Route path="/reset-password" element={
+                        <GuestRoute>
+                            <ResetPassword />
+                        </GuestRoute>
+                    } />
                     <Route path="/email/verify/:id/:hash" element={<VerifyEmail />} />
                     <Route path="/email/verify-success" element={<VerifySuccess />} />
                     <Route path="/email/verify-error" element={<VerifyError />} />

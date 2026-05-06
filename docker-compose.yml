@@ -183,7 +183,7 @@ services:
       - MAIL_HOST=smtp.gmail.com
       - MAIL_PORT=587
       - MAIL_USERNAME=dengu2127@gmail.com
-      - MAIL_PASSWORD=bnaboukmsevqavxw
+      - MAIL_PASSWORD=sarzubdgxiwxpqvp
       - MAIL_FROM_ADDRESS="lavarel@gmail.com"
       - MAIL_FROM_NAME="Laravel"
       # Khác
@@ -193,7 +193,8 @@ services:
         condition: service_healthy
     # CHỖ BẠN CẦN ĐÂY: Chạy migrate -> seed -> rồi mới bật php-fpm
     command: >
-      sh -c "echo 'Waiting for MySQL...' && 
+      sh -c "php artisan storage:link &&
+            echo 'Waiting for MySQL...' && 
              sleep 10 && 
              php artisan migrate --force && 
              php artisan db:seed --force && 
@@ -206,14 +207,32 @@ services:
     build: ./backend
     container_name: laravel_worker
     environment:
+      - APP_NAME=Laravel
+      - APP_ENV=local
+      - APP_KEY=base64:eLolFAXxf4WG12Lem7BPteOyLBKbcwkoK7pY338OAiU= # BẮT BUỘC PHẢI CÓ
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8000
+      # Kết nối DB
       - DB_CONNECTION=mysql
       - DB_HOST=db
       - DB_PORT=3306
       - DB_DATABASE=noteapp
       - DB_USERNAME=root
       - DB_PASSWORD=11111111
-      - CACHE_STORE=database # Hoặc redis nếu bạn muốn dùng redis cho cache
-      - QUEUE_CONNECTION=database # Hoặc redis
+      # Cấu hình Queue
+      - QUEUE_CONNECTION=database 
+      # Cấu hình Mail (Worker là thực thể trực tiếp gửi mail, nên phải có các dòng này)
+      - MAIL_MAILER=smtp
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=587
+      - MAIL_USERNAME=dengu2127@gmail.com
+      - MAIL_PASSWORD=sarzubdgxiwxpqvp
+      - MAIL_FROM_ADDRESS="lavarel@gmail.com"
+      - MAIL_FROM_NAME="Laravel"
+      # Các biến hỗ trợ link trong mail
+      - FRONTEND_URL=http://localhost:5173
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     volumes:
       - ./backend:/var/www
     depends_on:

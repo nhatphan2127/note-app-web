@@ -16,16 +16,16 @@ const VerifySuccess: React.FC = () => {
                 </div>
                 
                 <p className="lead text-muted mb-4">
-                    Email của bạn đã được xác thực thành công. Bây giờ bạn có thể bắt đầu sử dụng tất cả các tính năng của ứng dụng.
+                    Email của bạn đã được xác thực thành công.
                 </p>
 
                 <Button 
                     variant="primary" 
                     size="lg" 
-                    onClick={() => navigate('/login')}
+                    onClick={() => navigate('/')}
                     className="px-5"
                 >
-                    Đến trang Đăng nhập
+                    Quay về trang chủ
                 </Button>
             </div>
         </Container>
