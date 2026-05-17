@@ -128,9 +128,13 @@ const Home: React.FC = () => {
                     );
                 }
                 if (selectedLabelIds.length > 0) {
-                    localNotes = localNotes.filter(n =>
-                        n.labels.some(l => selectedLabelIds.includes(l.id))
-                    );
+                    localNotes = localNotes.filter(note => {
+                        // Kiểm tra xem MỌI id trong selectedLabelIds 
+                        // đều phải tồn tại trong mảng note.labels của ghi chú đó
+                        return selectedLabelIds.every(id =>
+                            note.labels.some(label => label.id === id)
+                        );
+                    });
                 }
                 setNotes(sortNotes(localNotes));
             }
@@ -167,43 +171,43 @@ const Home: React.FC = () => {
     }, [search, selectedLabelIds, activeSection, fetchNotes]);
 
     useEffect(() => {
-    const echo = (window as any).Echo;
-    // Thêm check user?.id để đảm bảo có ID so sánh
-    if (!echo || !user?.id || notes.length === 0) return;
+        const echo = (window as any).Echo;
+        // Thêm check user?.id để đảm bảo có ID so sánh
+        if (!echo || !user?.id || notes.length === 0) return;
 
-    const channels: string[] = [];
+        const channels: string[] = [];
 
-    notes.forEach(note => {
-        const channelName = `note.${note.id}`;
-        echo.join(channelName)
-            .listen('NoteUpdated', (e: any) => {
-                // Kiểm tra nghiêm ngặt ID người gửi
-                // Dùng String() để tránh lỗi so sánh khác kiểu dữ liệu
-                const isMine = String(e.user_id) === String(user.id);
-                
-                // Nếu là của mình gửi hoặc đang mở modal note đó thì KHÔNG cập nhật
-                if (isMine || selectedNote?.id === e.id) {
-                    console.log("Bỏ qua cập nhật (tự gửi hoặc đang edit)");
-                    return;
-                }
+        notes.forEach(note => {
+            const channelName = `note.${note.id}`;
+            echo.join(channelName)
+                .listen('NoteUpdated', (e: any) => {
+                    // Kiểm tra nghiêm ngặt ID người gửi
+                    // Dùng String() để tránh lỗi so sánh khác kiểu dữ liệu
+                    const isMine = String(e.user_id) === String(user.id);
 
-                console.log("Đã nhận dữ liệu từ người khác:", e);
-                handleUpdateNote(e.id, {
-                    title: e.title,
-                    content: e.content
-                }, true);
-            });
-        
-        channels.push(channelName);
-    });
+                    // Nếu là của mình gửi hoặc đang mở modal note đó thì KHÔNG cập nhật
+                    if (isMine || selectedNote?.id === e.id) {
+                        console.log("Bỏ qua cập nhật (tự gửi hoặc đang edit)");
+                        return;
+                    }
 
-    return () => {
-        channels.forEach(name => {
-            echo.leave(name);
+                    console.log("Đã nhận dữ liệu từ người khác:", e);
+                    handleUpdateNote(e.id, {
+                        title: e.title,
+                        content: e.content
+                    }, true);
+                });
+
+            channels.push(channelName);
         });
-    };
-    // Thay đổi dependency: Dùng chuỗi ID để tránh chạy lại effect vô ích
-}, [notes.map(n => n.id).join(','), user?.id, selectedNote?.id]); // Listen when notes list or selected note changes
+
+        return () => {
+            channels.forEach(name => {
+                echo.leave(name);
+            });
+        };
+        // Thay đổi dependency: Dùng chuỗi ID để tránh chạy lại effect vô ích
+    }, [notes.map(n => n.id).join(','), user?.id, selectedNote?.id]); // Listen when notes list or selected note changes
 
     const sortNotes = (notesList: Note[]) => {
         return [...notesList].sort((a, b) => {
@@ -242,11 +246,11 @@ const Home: React.FC = () => {
                         updated.pinned_at = data.is_pinned ? new Date().toISOString() : undefined;
                     }
                     const updatedNotes = prevNotes.map(n => n.id === noteId ? updated : n);
-                    
+
                     if (selectedNote?.id === noteId) {
                         setSelectedNote(updated);
                     }
-                    
+
                     return sortNotes(updatedNotes);
                 }
                 return prevNotes;
@@ -421,9 +425,9 @@ const Home: React.FC = () => {
             <Navbar expand="lg" className="shadow-sm sticky-top mb-4 py-2" style={{ backgroundColor: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)' }}>
                 <Container fluid className="px-4 d-flex align-items-center justify-content-between">
                     <div className="d-flex align-items-center gap-3">
-                        <Button 
-                            variant="light" 
-                            className="d-lg-none border-0 bg-transparent p-0" 
+                        <Button
+                            variant="light"
+                            className="d-lg-none border-0 bg-transparent p-0"
                             onClick={() => setShowMobileMenu(true)}
                         >
                             <FontAwesomeIcon icon={faBars} className="fs-4 text-dark" />
@@ -446,11 +450,11 @@ const Home: React.FC = () => {
 
                         <div className="d-none d-lg-flex align-items-center gap-2 border-start ps-3 ms-2" style={{ cursor: 'pointer' }} onClick={() => setActiveSection('profile')}>
                             {user?.avatar ? (
-                                <Image 
-                                    src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/storage/${user.avatar}`} 
-                                    roundedCircle 
-                                    width="32" 
-                                    height="32" 
+                                <Image
+                                    src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/storage/${user.avatar}`}
+                                    roundedCircle
+                                    width="32"
+                                    height="32"
                                     className="object-fit-cover shadow-sm border border-2 border-white"
                                 />
                             ) : (
@@ -459,7 +463,7 @@ const Home: React.FC = () => {
                                 </div>
                             )}
                             <div className="fw-bold small"
-                                style={{color: 'var(--text-main)'}}
+                                style={{ color: 'var(--text-main)' }}
                             >{user?.name}</div>
                         </div>
 
@@ -482,11 +486,11 @@ const Home: React.FC = () => {
                     <div className="p-4 border-bottom bg-light">
                         <div className="d-flex align-items-center gap-3">
                             {user?.avatar ? (
-                                <Image 
-                                    src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/storage/${user.avatar}`} 
-                                    roundedCircle 
-                                    width="35" 
-                                    height="35" 
+                                <Image
+                                    src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/storage/${user.avatar}`}
+                                    roundedCircle
+                                    width="35"
+                                    height="35"
                                     className="object-fit-cover shadow-sm border border-2 border-white"
                                 />
                             ) : (
@@ -509,7 +513,7 @@ const Home: React.FC = () => {
                         >
                             <FontAwesomeIcon icon={faNoteSticky} /> All Notes
 
-                            
+
                         </Nav.Link>
                         <Nav.Link
                             active={activeSection === 'shared'}
@@ -540,15 +544,15 @@ const Home: React.FC = () => {
                         >
                             <FontAwesomeIcon icon={faUserGear} /> Profile
                         </Nav.Link>
-                        <Button 
-                            variant="outline-danger" 
-                            className="mt-4 mx-3 rounded-pill" 
+                        <Button
+                            variant="outline-danger"
+                            className="mt-4 mx-3 rounded-pill"
                             onClick={logout}
                         >
                             Logout
                         </Button>
                     </Nav>
-                    
+
                     <div className="position-absolute bottom-0 w-100 p-4 border-top bg-light">
                         <div className={`d-flex align-items-center gap-2 ${isOnline ? 'text-success' : 'text-secondary'} small fw-bold`}>
                             <FontAwesomeIcon icon={isOnline ? faWifi : faSignal} />
@@ -611,9 +615,9 @@ const Home: React.FC = () => {
                             </Nav>
 
                             <div className="mt-auto pt-4 border-top">
-                                <Button 
-                                    variant="outline-danger" 
-                                    className="w-100 rounded-pill d-flex align-items-center justify-content-center gap-2" 
+                                <Button
+                                    variant="outline-danger"
+                                    className="w-100 rounded-pill d-flex align-items-center justify-content-center gap-2"
                                     onClick={logout}
                                 >
                                     <FontAwesomeIcon icon={faSignOutAlt} /> Logout
@@ -810,10 +814,10 @@ const Home: React.FC = () => {
                 />
             )}
 
-            <Modal 
-                show={!!verifyingNote} 
-                onHide={() => { setVerifyingNote(null); setVerifyPassword(''); setPendingAction(null); setIsResettingNotePassword(false); }} 
-                centered 
+            <Modal
+                show={!!verifyingNote}
+                onHide={() => { setVerifyingNote(null); setVerifyPassword(''); setPendingAction(null); setIsResettingNotePassword(false); }}
+                centered
                 size={isResettingNotePassword ? undefined : "sm"}
                 className="password-modal"
             >
@@ -824,8 +828,8 @@ const Home: React.FC = () => {
                         </div>
                         <h4 className="fw-bold mb-1">{isResettingNotePassword ? 'Security Recovery' : 'Note Protected'}</h4>
                         <p className="text-muted small">
-                            {isResettingNotePassword 
-                                ? 'Verify your identity to set a new password' 
+                            {isResettingNotePassword
+                                ? 'Verify your identity to set a new password'
                                 : 'Please enter the password to access this note'}
                         </p>
                     </div>
@@ -844,9 +848,9 @@ const Home: React.FC = () => {
                                         onKeyDown={(e) => e.key === 'Enter' && handleVerifyPassword()}
                                         style={{ backgroundColor: 'var(--bg-color)' }}
                                     />
-                                    <Button 
-                                        variant="white" 
-                                        className="border-0 text-muted" 
+                                    <Button
+                                        variant="white"
+                                        className="border-0 text-muted"
                                         onClick={() => setShowVerifyPasswordInput(!showVerifyPasswordInput)}
                                         style={{ backgroundColor: 'var(--bg-color)' }}
                                     >
@@ -854,25 +858,25 @@ const Home: React.FC = () => {
                                     </Button>
                                 </InputGroup>
                             </Form.Group>
-                            
+
                             <div className="d-grid gap-2 mb-3">
                                 <Button variant="primary" className="rounded-pill py-2 fw-bold" onClick={handleVerifyPassword}>
                                     Unlock Note
                                 </Button>
-                                <Button 
-                                    variant="link" 
-                                    size="sm" 
+                                <Button
+                                    variant="link"
+                                    size="sm"
                                     className="text-muted text-decoration-none small"
                                     onClick={() => setIsResettingNotePassword(true)}
                                 >
                                     Forgot password?
                                 </Button>
                             </div>
-                            
-                            <Button 
-                                variant="link" 
-                                size="sm" 
-                                className="text-muted text-decoration-none" 
+
+                            <Button
+                                variant="link"
+                                size="sm"
+                                className="text-muted text-decoration-none"
                                 onClick={() => { setVerifyingNote(null); setVerifyPassword(''); setPendingAction(null); }}
                             >
                                 Cancel
@@ -916,9 +920,9 @@ const Home: React.FC = () => {
                                 <Button variant="primary" className="rounded-pill py-2 fw-bold" onClick={handleResetNotePassword}>
                                     Reset & Save
                                 </Button>
-                                <Button 
-                                    variant="light" 
-                                    className="rounded-pill py-2 fw-bold" 
+                                <Button
+                                    variant="light"
+                                    className="rounded-pill py-2 fw-bold"
                                     onClick={() => setIsResettingNotePassword(false)}
                                 >
                                     Back
@@ -966,8 +970,8 @@ const Home: React.FC = () => {
             </Modal>
 
             {/* Floating Action Button for Mobile */}
-            <button 
-                className="fab d-lg-none" 
+            <button
+                className="fab d-lg-none"
                 onClick={handleCreateNote}
                 title="New Note"
             >
